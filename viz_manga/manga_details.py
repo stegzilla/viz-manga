@@ -79,5 +79,5 @@ class VizMangaDetails:
             date = None
             if ", 20" in dateText:
                 date = datetime.strptime(dateText, "%B %d, %Y")
-            chapters.append(Chapter(name, chapter_id, link, is_free))
+            chapters.append(Chapter(name, chapter_id, link, date, is_free))
         return chapters
