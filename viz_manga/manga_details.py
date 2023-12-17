@@ -3,6 +3,7 @@ import re
 from typing import List
 from bs4 import BeautifulSoup, ResultSet
 from requests import Response, Session
+from datetime import datetime
 
 
 @dataclass
@@ -20,6 +21,7 @@ class Chapter:
     title: str
     id: str
     link: str
+    date: datetime
     is_free: bool = False
 
 
@@ -73,5 +75,9 @@ class VizMangaDetails:
 
             name: str = chapter_tag["id"]
             is_free: bool = "join to read" not in chapter_tag.get("href", "").lower()
+            dateText = chapter_tag.find_next("td").text
+            date = None
+            if ", 20" in dateText:
+                date = datetime.strptime(dateText, "%B %d, %Y")
             chapters.append(Chapter(name, chapter_id, link, is_free))
         return chapters
