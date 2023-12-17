@@ -98,6 +98,7 @@ class VizMangaFetch:
         # each page url is signed for 1 second longer than the previous page.
         page_names: List[str] = self._save_pages(chapter_id, manifest, directory)
 
+        pages_combine: List[int] = []
         if combine:
             pages_combine: List[int] = list(range(0, len(page_names), 2))  # all pages
         elif metadata.spreads:
