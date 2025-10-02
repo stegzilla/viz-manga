@@ -10,7 +10,11 @@ from datetime import datetime
 class Series:
     name: str
     slug: str
-    link: str
+    source: str
+    
+    @property
+    def link(self) -> str:
+        return f"https://www.viz.com/{source}/chapters/{self.slug}"
 
 
 @dataclass
@@ -49,7 +53,7 @@ class VizMangaDetails:
                 -1
             ].text.strip()
 
-            series.append(Series(name, slug, link))
+            series.append(Series(name, slug, self.loc))
         return sorted(series, key=lambda s: s.name.lower())
 
     def get_series_chapters(self, series: Series) -> List[Chapter]:
