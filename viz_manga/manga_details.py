@@ -10,10 +10,7 @@ from datetime import datetime
 class Series:
     name: str
     slug: str
-
-    @property
-    def link(self) -> str:
-        return f"https://www.viz.com/shonenjump/chapters/{self.slug}"
+    link: str
 
 
 @dataclass
@@ -26,17 +23,18 @@ class Chapter:
 
 
 class VizMangaDetails:
-    def __init__(self) -> None:
+    def __init__(self, shonenjump=True) -> None:
+        self.loc = "shonenjump" if shonenjump else "vizmanga"
         self.session = Session()
         self.session.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36"
         }
 
     def get_series(self) -> List[Series]:
-        url: str = "https://www.viz.com/shonenjump"
+        url: str = f"https://www.viz.com/{self.loc}"
         resp: Response = self.session.get(url)
 
-        series_link_pattern: str = "/shonenjump/chapters/"
+        series_link_pattern: str = f"/{self.loc}/chapters/"
 
         soup: BeautifulSoup = BeautifulSoup(resp.text, "html.parser")
         series_tags: ResultSet = soup.find_all(
@@ -45,19 +43,19 @@ class VizMangaDetails:
 
         series: List[Series] = []
         for series_tag in series_tags:
-            link: str = series_tag["href"]
+            link: str = f"https://www.viz.com{series_tag['href']}"
             slug: str = link.replace(series_link_pattern, "").strip()
             name: str = series_tag.find_all("div", class_="type-center")[
                 -1
             ].text.strip()
 
-            series.append(Series(name, slug))
+            series.append(Series(name, slug, link))
         return sorted(series, key=lambda s: s.name.lower())
 
     def get_series_chapters(self, series: Series) -> List[Chapter]:
         resp: Response = self.session.get(series.link)
 
-        chapter_link_pattern: str = "/shonenjump/[^/]+/chapter/(\d+)"
+        chapter_link_pattern: str = f"/{self.loc}/[^/]+/chapter/(\d+)"
 
         soup: BeautifulSoup = BeautifulSoup(resp.text, "html.parser")
         chapter_tags: ResultSet = soup.find_all(
