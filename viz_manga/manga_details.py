@@ -14,7 +14,7 @@ class Series:
     
     @property
     def link(self) -> str:
-        return f"https://www.viz.com/{source}/chapters/{self.slug}"
+        return f"https://www.viz.com/{self.source}/chapters/{self.slug}"
 
 
 @dataclass
